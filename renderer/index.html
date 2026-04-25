@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com">
+  <title>NihongoSpeak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="window">
+    <nav class="tab-bar">
+      <button class="tab-btn active" data-tab="chat">
+        <span class="tab-icon">💬</span>Chat
+      </button>
+      <button class="tab-btn" data-tab="sessions">
+        <span class="tab-icon">🗂️</span>Sessions
+      </button>
+      <button class="tab-btn" data-tab="vocabulary">
+        <span class="tab-icon">📖</span>Vocabulary
+      </button>
+      <button class="tab-btn" data-tab="settings">
+        <span class="tab-icon">⚙️</span>Settings
+      </button>
+    </nav>
+
+    <div class="tab-view">
+      <!-- CHAT PANEL -->
+      <div class="chat-panel active" id="chat-panel">
+        <div class="status-strip">
+          <div class="badge badge-level" id="levelBadge">N5</div>
+          <div class="badge badge-immersion" id="immersionBadge">70% Immersion</div>
+          <div class="status-right">
+            <div class="vol-meter" id="volMeter">
+              <div class="vol-bar"></div>
+              <div class="vol-bar"></div>
+              <div class="vol-bar"></div>
+              <div class="vol-bar"></div>
+              <div class="vol-bar"></div>
+              <div class="vol-bar"></div>
+              <div class="vol-bar"></div>
+              <div class="vol-bar"></div>
+            </div>
+            <span class="vol-label" id="volLabel">Ready</span>
+          </div>
+        </div>
+        <div class="message-list" id="message-list"></div>
+        <div class="input-bar card">
+          <button class="mic-btn" id="mic-btn" title="Hold to record">
+            <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+            <svg class="mic-icon recording-icon" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+              <circle cx="12" cy="12" r="6"/>
+            </svg>
+            <svg class="mic-icon spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+              <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/>
+            </svg>
+          </button>
+          <input type="text" class="input-field" id="chat-input" placeholder="Type a message..." />
+          <button class="send-btn" id="send-btn">Send</button>
+        </div>
+      </div>
+
+      <!-- SESSIONS PANEL -->
+      <div class="sessions-panel" id="sessions-panel">
+        <div class="panel-content card">
+          <div class="panel-header">
+            <h2 class="panel-title">🗂️ Saved Sessions</h2>
+            <div class="header-actions">
+              <button class="btn btn-danger" id="clear-sessions-btn">Clear All</button>
+            </div>
+          </div>
+          <div class="sessions-list" id="sessions-list">
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <p>No saved sessions yet</p>
+              <p class="empty-hint">Start chatting to save a session</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VOCABULARY PANEL -->
+      <div class="vocabulary-panel" id="vocabulary-panel">
+        <div class="panel-content card">
+          <div class="panel-header">
+            <h2 class="panel-title">📖 Vocabulary Tracker</h2>
+            <div class="header-actions">
+              <button class="btn btn-secondary" id="export-vocab-btn">Export</button>
+            </div>
+          </div>
+          <div class="vocab-controls">
+            <input type="text" class="input-field" id="vocab-search" placeholder="Search vocabulary..." />
+            <select class="input-field" id="vocab-filter">
+              <option value="all">All Words</option>
+              <option value="due">Due for Review</option>
+              <option value="struggling">Struggling</option>
+            </select>
+          </div>
+          <div class="table-container">
+            <table class="vocab-table">
+              <thead>
+                <tr>
+                  <th>Word</th>
+                  <th>Reading</th>
+                  <th>Meaning</th>
+                  <th>Struggles</th>
+                  <th>Last Seen</th>
+                  <th>Next Review</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="vocab-tbody"></tbody>
+            </table>
+            <div class="empty-state" id="vocab-empty" style="display:none">
+              <div class="empty-icon">📚</div>
+              <p>No vocabulary words yet</p>
+              <p class="empty-hint">Words you struggle with will appear here</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS PANEL -->
+      <div class="settings-panel" id="settings-panel">
+        <div class="settings-scroll">
+          <div class="settings-content card">
+            <section class="settings-section">
+              <h3 class="section-label">🔑 API Configuration</h3>
+              <div class="field">
+                <label for="api-key-input">Groq API Key</label>
+                <div class="input-with-toggle">
+                  <input type="password" class="input-field" id="api-key-input" placeholder="Enter your Groq API key" />
+                  <button class="toggle-visibility" id="toggle-api-key" type="button">👁</button>
+                </div>
+                <p class="field-help">Get your free API key at <a href="#" id="groq-link">groq.com</a></p>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h3 class="section-label">🎚️ Learning Settings</h3>
+              <div class="field">
+                <label>Immersion Ratio: <span id="immersion-value" class="value-large">70%</span></label>
+                <input type="range" class="slider" id="immersion-slider" min="50" max="100" value="70" />
+                <p class="field-help">Higher = more Japanese in responses</p>
+              </div>
+              <div class="field">
+                <label>Proficiency Level</label>
+                <div class="level-grid" id="level-grid">
+                  <button class="level-card" data-level="A0.1">A0.1</button>
+                  <button class="level-card" data-level="A0.2">A0.2</button>
+                  <button class="level-card" data-level="A1">A1</button>
+                  <button class="level-card" data-level="A1.2">A1.2</button>
+                  <button class="level-card" data-level="A2">A2</button>
+                  <button class="level-card" data-level="A2.2">A2.2</button>
+                  <button class="level-card" data-level="B1">B1</button>
+                  <button class="level-card" data-level="B1.2">B1.2</button>
+                  <button class="level-card" data-level="B2">B2</button>
+                  <button class="level-card" data-level="C1">C1</button>
+                  <button class="level-card selected" data-level="N1">N1</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h3 class="section-label">🔊 Voice Settings</h3>
+              <div class="field">
+                <label for="tts-voice-select">TTS Voice</label>
+                <select class="input-field" id="tts-voice-select">
+                  <option value="ja-JP-NanamiNeural">Nanami (Female)</option>
+                  <option value="ja-JP-KeitaNeural">Keita (Male)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>TTS Speed: <span id="tts-speed-value" class="value-large">1.0x</span></label>
+                <input type="range" class="slider" id="tts-speed-slider" min="80" max="150" value="100" />
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h3 class="section-label">🎙️ Speech Recognition</h3>
+              <div class="field">
+                <label for="stt-lang-toggle">Language Hint</label>
+                <select class="input-field" id="stt-lang-toggle">
+                  <option value="ja">Japanese</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Microphone Calibration</label>
+                <button class="btn btn-secondary" id="recalibrateBtn">🎙️ Recalibrate Mic</button>
+                <div class="calibration-result" id="calibrationResult"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="settings-footer">
+          <button class="save-settings-btn" id="save-settings-btn">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
